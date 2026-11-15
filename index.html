@@ -167,7 +167,7 @@ h2:first-child{margin-top:2px}
 .switch{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;margin-bottom:12px}
 .switch input{width:22px;height:22px;accent-color:var(--accent)}
 .toast{position:fixed;left:50%;top:calc(74px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--deep);color:var(--deep-ink);padding:10px 16px;border-radius:12px;z-index:90;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:90vw;text-align:center}
-.dayhd{font-size:12px;font-weight:800;color:var(--muted);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.06em}
+.cl{cursor:pointer;user-select:none;-webkit-user-select:none;display:flex;align-items:center;gap:6px}.cl .chev{display:inline-block;font-size:.85em;transition:transform .15s}.cl.shut .chev{transform:rotate(-90deg)}.dayhd{font-size:12px;font-weight:800;color:var(--muted);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.06em}
 .tag{font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;background:var(--accent-soft);color:var(--accent);text-transform:uppercase;letter-spacing:.03em}
 .tag.in{background:var(--good-soft);color:var(--good)}
 .tag.adj,.tag.pre{background:var(--sun-soft);color:var(--sun-ink)}
@@ -340,7 +340,16 @@ async function init(){
 function softRender(){const a=document.activeElement;const id=a&&a.id&&$('#app').contains(a)?a.id:null;const pos=id&&a.selectionStart;render();if(id){const n=document.getElementById(id);if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}}}
 
 /* ===== dialogs ===== */
-function sheet(title,body){$('#layer').innerHTML=`<div class="overlay" onclick="if(event.target===this)closeSheet()"><div class="sheet" role="dialog" aria-label="${esc(title)}"><div class="hd"><h3 class="ell">${esc(title)}</h3><button class="iconbtn" onclick="closeSheet()" aria-label="Close">${IC.close}</button></div>${body}</div></div>`;document.body.style.overflow='hidden'}
+function sheet(title,body){$('#layer').innerHTML=`<div class="overlay" onclick="if(event.target===this)closeSheet()"><div class="sheet" role="dialog" aria-label="${esc(title)}"><div class="hd"><h3 class="ell">${esc(title)}</h3><button class="iconbtn" onclick="closeSheet()" aria-label="Close">${IC.close}</button></div>${body}</div></div>`;enhance($('#layer'));document.body.style.overflow='hidden'}
+U.col={};
+function enhance(root){if(!root)return;const hs=[...root.querySelectorAll('h2,.dayhd')].filter(h=>!h.closest('.codebox')&&!h.dataset.c);
+  const isH=e=>e.matches&&e.matches('h2,.dayhd');
+  hs.forEach(h=>{if(!h.parentNode)return;h.dataset.c='1';const key=U.tab+'|'+(h.closest('#layer')?'s|':'')+h.textContent.trim();
+    const body=document.createElement('div');body.className='cbody';let n=h.nextElementSibling;while(n&&!isH(n)&&!n.querySelector('h2,.dayhd')){const nx=n.nextElementSibling;body.appendChild(n);n=nx}
+    h.after(body);const shut=!!U.col[key];body.hidden=shut;h.classList.add('cl');if(shut)h.classList.add('shut');
+    h.insertAdjacentHTML('afterbegin','<span class="chev" aria-hidden="true">&#9662;</span>');h.setAttribute('role','button');h.setAttribute('tabindex','0');h.setAttribute('aria-expanded',String(!shut));
+    const tg=()=>{U.col[key]=!U.col[key];body.hidden=U.col[key];h.classList.toggle('shut',U.col[key]);h.setAttribute('aria-expanded',String(!U.col[key]))};
+    h.addEventListener('click',tg);h.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tg()}})})}
 function closeSheet(){$('#layer').innerHTML='';document.body.style.overflow=''}
 let DLG=null;
 function ask(msg,okLabel,fn,danger){DLG=fn;$('#dlg').innerHTML=`<div class="overlay"><div class="box"><div style="margin-bottom:16px">${msg}</div><div class="btns"><button class="btn line" onclick="closeDlg()">Cancel</button><button class="btn ${danger?'danger':''}" onclick="const f=DLG;closeDlg();f&&f()">${esc(okLabel)}</button></div></div></div>`}
@@ -363,7 +372,7 @@ function render(){
   <main>${OFFLINE_NOTE?'<div class="note">Can\'t reach the saved data yet. Check the internet. What you see may be out of date.</div>':''}${MODE==='local'?'<div class="note">Not connected to the shared Google Sheet yet. Saved on this device only.</div>':''}
   ${({sell:vSell,stock:vStock,orders:vOrders,report:vReport,hist:vHist})[U.tab]()}</main>
   ${U.tab==='sell'?cartBar():''}
-  <nav class="tabs"><div class="in">${tb('sell','Sell')}${tb('stock','Stock',low)}${tb('orders','Orders',owed)}${tb('report','Reports')}${tb('hist','History')}</div></nav>`;
+  <nav class="tabs"><div class="in">${tb('sell','Sell')}${tb('stock','Stock',low)}${tb('orders','Orders',owed)}${tb('report','Reports')}${tb('hist','History')}</div></nav>`;enhance(app);
 }
 function tb(k,l,n){return `<button class="${U.tab===k?'on':''}" onclick="go('${k}')">${IC[k==='orders'?'orders':k]}${n?`<span class="dot">${n}</span>`:''}<span>${l}</span></button>`}
 function go(t){U.tab=t;render();window.scrollTo(0,0)}
@@ -632,7 +641,7 @@ function openSettings(){const c=cfg();
   <h2>Backup</h2><p class="small muted" style="margin-top:0">Everything is saved in your Google Sheet and shows on Pola's phone and laptop. A backup file is extra safety.${c.lastBackup?' Last backup: '+fmtDay(c.lastBackup)+'.':''}</p>
   <div class="btns"><button class="btn line" onclick="backup()">Download backup</button><button class="btn line" onclick="pickRestore()">Restore backup</button></div>
   <h2>Start over</h2><button class="btn danger block" onclick="ask('Erase ALL designs, orders, utang and stock? Download a backup first. This cannot be undone.','Erase everything',eraseAll,true)">Erase all data</button>
-  <p class="tiny muted" style="text-align:center;margin-top:18px">Abogado Puhon Inventory v2.6</p>`)}
+  <p class="tiny muted" style="text-align:center;margin-top:18px">Abogado Puhon Inventory v2.7</p>`)}
 function setTheme(t){lset('ap-theme',t);if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t);openSettings()}
 function saveSettings(){const c=S.settings;c.store=$('#stName').value.trim()||'Abogado Puhon';
   c.cats.forEach((k,i)=>{c.prices[k]=c.prices[k]||{Standard:{},Mini:{}};['Standard','Mini'].forEach(s=>['price','cost'].forEach(f=>{c.prices[k][s]=c.prices[k][s]||{};c.prices[k][s][f]=+$(`#pl_${i}_${s}_${f}`).value||0}))});
