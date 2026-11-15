@@ -216,11 +216,11 @@ const DEFAULT_SETTINGS={
     'Codal Outlined':{Standard:{price:50,cost:40},Mini:{price:40,cost:20}}
   },
   glitter:{price:5,cost:0},
-  discounts:{two:10,three:15,four:20},
+  discounts:{two:10,three:15,four:15},
   low:3
 };
 
-const DEFAULT_PRODUCTS=[{"id":"j1mc-girl","name":"J1MC Girl","cat":"J1MC","img":"photos/j1mc-girl.jpg"},{"id":"j1mc-boy","name":"J1MC Boy","cat":"J1MC","img":"photos/j1mc-boy.jpg"},{"id":"ap-breakfast","name":"AP Breakfast","cat":"AP Designs","img":"photos/ap-breakfast.jpg"},{"id":"ap-coffee","name":"AP Coffee","cat":"AP Designs","img":"photos/ap-coffee.jpg"},{"id":"ap-antukin","name":"AP Antukin","cat":"AP Designs","img":"photos/ap-antukin.jpg"},{"id":"ap-tapang","name":"AP Tapang","cat":"AP Designs","img":"photos/ap-tapang.jpg"},{"id":"codal-roc","name":"Codal ROC","cat":"Codal","img":"photos/codal-roc.jpg"},{"id":"codal-rpc","name":"Codal RPC","cat":"Codal","img":"photos/codal-rpc.jpg"},{"id":"codal-consti","name":"Codal Consti","cat":"Codal"},{"id":"codal-civil","name":"Codal Civil","cat":"Codal"},{"id":"outlined-roc","name":"Codal Outlined ROC","cat":"Codal Outlined","img":"photos/outlined-roc.jpg"},{"id":"outlined-rpc","name":"Codal Outlined RPC","cat":"Codal Outlined"},{"id":"outlined-consti","name":"Codal Outlined Consti","cat":"Codal Outlined"},{"id":"outlined-civil","name":"Codal Outlined Civil","cat":"Codal Outlined"},{"id":"ap-notes","name":"AP Notes","cat":"AP Designs"},{"id":"ap-balasa","name":"AP Balasa","cat":"AP Designs"},{"id":"sticker-small","name":"Small Sticker","cat":"Stickers","simple":true,"price":10,"cost":0},{"id":"sticker-big","name":"Big Sticker","cat":"Stickers","simple":true,"price":15,"cost":0}];
+const DEFAULT_PRODUCTS=[{"id":"j1mc-girl","name":"J1MC Girl","cat":"J1MC","img":"photos/j1mc-girl.jpg"},{"id":"j1mc-boy","name":"J1MC Boy","cat":"J1MC","img":"photos/j1mc-boy.jpg"},{"id":"ap-breakfast","name":"AP Breakfast","cat":"AP Designs","img":"photos/ap-breakfast.jpg"},{"id":"ap-coffee","name":"AP Coffee","cat":"AP Designs","img":"photos/ap-coffee.jpg"},{"id":"ap-antukin","name":"AP Antukin","cat":"AP Designs","img":"photos/ap-antukin.jpg"},{"id":"ap-tapang","name":"AP Tapang","cat":"AP Designs","img":"photos/ap-tapang.jpg"},{"id":"codal-roc","name":"Codal ROC","cat":"Codal","img":"photos/codal-roc.jpg"},{"id":"codal-rpc","name":"Codal RPC","cat":"Codal","img":"photos/codal-rpc.jpg"},{"id":"codal-consti","name":"Codal Consti","cat":"Codal"},{"id":"codal-civil","name":"Codal Civil","cat":"Codal"},{"id":"outlined-roc","name":"Codal Outlined ROC","cat":"Codal Outlined","img":"photos/outlined-roc.jpg"},{"id":"outlined-rpc","name":"Codal Outlined RPC","cat":"Codal Outlined"},{"id":"outlined-consti","name":"Codal Outlined Consti","cat":"Codal Outlined"},{"id":"outlined-civil","name":"Codal Outlined Civil","cat":"Codal Outlined"},{"id":"ap-notes","name":"AP Notes","cat":"AP Designs","img":"photos/ap-notes.jpg"},{"id":"ap-balasa","name":"AP Balasa","cat":"AP Designs","img":"photos/ap-balasa.jpg"},{"id":"sticker-small","name":"Small Sticker","cat":"Stickers","simple":true,"price":10,"cost":0},{"id":"sticker-big","name":"Big Sticker","cat":"Stickers","simple":true,"price":15,"cost":0}];
 /* ===== state ===== */
 let S={settings:null,products:[],moves:[],photos:{}};
 let ST={};               // derived stock per variant key
@@ -253,7 +253,8 @@ function totalStock(pid){return VARS(P(pid)).reduce((t,[s,f])=>t+stockOf(pid,s,f
 function catList(){const c=[...cfg().cats];S.products.forEach(p=>{if(!p.hidden&&p.cat&&!c.includes(p.cat))c.push(p.cat)});return c}
 function vState(n){const low=+cfg().low||0;return n<=0?'out':n<=low?'low':'ok'}
 function pState(pid){const t=totalStock(pid);return t<=0?'out':vState(t)}
-function photoSrc(p){return p?((S.photos&&S.photos[p.id])||p.img||''):''}
+const DEFAULT_IMG={};DEFAULT_PRODUCTS.forEach(d=>{if(d.img)DEFAULT_IMG[d.id]=d.img});
+function photoSrc(p){return p?((S.photos&&S.photos[p.id])||p.img||DEFAULT_IMG[p.id]||''):''}
 function phHTML(p,cls){const s=photoSrc(p);return `<div class="ph ${cls||''}">${s?`<img src="${esc(s)}" alt="" loading="lazy" onerror="this.remove()">`:`<span class="ini">${esc((p.name||'?').replace(/^(AP|J1MC)\s*/i,'').slice(0,2).toUpperCase())}</span>`}</div>`}
 function itemLabel(i){return i.size==='One'?esc(i.name):`${esc(i.name)} <span class="muted">(${SZ[i.size]||esc(i.size)}, ${esc(i.fin)})</span>`}
 function itemText(i){return `${i.qty} x ${i.name}`+(i.size==='One'?'':` (${i.size}, ${i.fin})`)}
@@ -608,7 +609,7 @@ function openSettings(){const c=cfg();
   <h2>Backup</h2><p class="small muted" style="margin-top:0">Everything is saved in your Google Sheet and shows on Pola's phone and laptop. A backup file is extra safety.${c.lastBackup?' Last backup: '+fmtDay(c.lastBackup)+'.':''}</p>
   <div class="btns"><button class="btn line" onclick="backup()">Download backup</button><button class="btn line" onclick="pickRestore()">Restore backup</button></div>
   <h2>Start over</h2><button class="btn danger block" onclick="ask('Erase ALL designs, orders, utang and stock? Download a backup first. This cannot be undone.','Erase everything',eraseAll,true)">Erase all data</button>
-  <p class="tiny muted" style="text-align:center;margin-top:18px">Abogado Puhon Inventory v2.3</p>`)}
+  <p class="tiny muted" style="text-align:center;margin-top:18px">Abogado Puhon Inventory v2.4</p>`)}
 function setTheme(t){lset('ap-theme',t);if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t);openSettings()}
 function saveSettings(){const c=S.settings;c.store=$('#stName').value.trim()||'Abogado Puhon';
   c.cats.forEach((k,i)=>{c.prices[k]=c.prices[k]||{Standard:{},Mini:{}};['Standard','Mini'].forEach(s=>['price','cost'].forEach(f=>{c.prices[k][s]=c.prices[k][s]||{};c.prices[k][s][f]=+$(`#pl_${i}_${s}_${f}`).value||0}))});
