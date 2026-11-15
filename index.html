@@ -594,7 +594,7 @@ function openSettings(){const c=cfg();
   <h2>Backup</h2><p class="small muted" style="margin-top:0">Everything is saved in your Google Sheet and shows on Pola's phone and laptop. A backup file is extra safety.${c.lastBackup?' Last backup: '+fmtDay(c.lastBackup)+'.':''}</p>
   <div class="btns"><button class="btn line" onclick="backup()">Download backup</button><button class="btn line" onclick="pickRestore()">Restore backup</button></div>
   <h2>Start over</h2><button class="btn danger block" onclick="ask('Erase ALL designs, orders, utang and stock? Download a backup first. This cannot be undone.','Erase everything',eraseAll,true)">Erase all data</button>
-  <p class="tiny muted" style="text-align:center;margin-top:18px">Abogado Puhon Inventory v2.1</p>`)}
+  <p class="tiny muted" style="text-align:center;margin-top:18px">Abogado Puhon Inventory v2.2</p>`)}
 function setTheme(t){lset('ap-theme',t);if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t);openSettings()}
 function saveSettings(){const c=S.settings;c.store=$('#stName').value.trim()||'Abogado Puhon';
   c.cats.forEach((k,i)=>{c.prices[k]=c.prices[k]||{Standard:{},Mini:{}};['Standard','Mini'].forEach(s=>['price','cost'].forEach(f=>{c.prices[k][s]=c.prices[k][s]||{};c.prices[k][s][f]=+$(`#pl_${i}_${s}_${f}`).value||0}))});
