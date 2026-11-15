@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Abogado Puhon Inventory</title>
 <meta name="theme-color" content="#E6DCF3">
+<script>try{var _t=localStorage.getItem("ap-theme")||"light";if(_t!=="auto")document.documentElement.setAttribute("data-theme",_t)}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="AP Inventory">
@@ -588,11 +589,13 @@ function openSettings(){const c=cfg();
   <div class="field"><label for="d2">2 pcs off</label><input id="d2" type="number" inputmode="decimal" value="${c.discounts.two}"></div><div class="field"><label for="d3">3 pcs off</label><input id="d3" type="number" inputmode="decimal" value="${c.discounts.three}"></div><div class="field"><label for="d4">4+ pcs off</label><input id="d4" type="number" inputmode="decimal" value="${c.discounts.four}"></div></div></div>
   <div class="field"><label for="stLow">Warn when a size and finish has this many left or fewer</label><input id="stLow" type="number" inputmode="numeric" value="${c.low}"></div>
   <button class="btn ink block" onclick="saveSettings()">Save settings</button>
+  <h2>Appearance</h2><div class="seg" style="margin-bottom:6px">${[['light','Light'],['dark','Dark'],['auto','Auto']].map(([k,l])=>`<button class="${(lget('ap-theme')||'light')===k?'on':''}" onclick="setTheme('${k}')">${l}</button>`).join('')}</div><div class="tiny muted">Auto follows the phone's dark mode setting.</div>
   <h2>Connection</h2><div class="card"><div class="sumrow small"><span class="muted">Saved in</span><b>${MODE==='sheet'?'Google Sheet':'This device only'}</b></div>${MODE==='sheet'?`<div class="sumrow small"><span class="muted">Last updated</span><b>${LASTSYNC?fmtTime(LASTSYNC):'not yet'}</b></div><div class="sumrow small"><span class="muted">Waiting to save</span><b>${OUT.length}</b></div><div class="btns" style="margin-top:8px"><button class="btn sm ghost" onclick="flush();pull(true);toast('Checking...')">Update now</button><button class="btn sm line" onclick="askCode('');closeSheet()">Change store code</button></div>`:'<p class="tiny muted" style="margin:6px 0 0">Set the sheet link in config.js to share the data with other devices.</p>'}</div>
   <h2>Backup</h2><p class="small muted" style="margin-top:0">Everything is saved in your Google Sheet and shows on Pola's phone and laptop. A backup file is extra safety.${c.lastBackup?' Last backup: '+fmtDay(c.lastBackup)+'.':''}</p>
   <div class="btns"><button class="btn line" onclick="backup()">Download backup</button><button class="btn line" onclick="pickRestore()">Restore backup</button></div>
   <h2>Start over</h2><button class="btn danger block" onclick="ask('Erase ALL designs, orders, utang and stock? Download a backup first. This cannot be undone.','Erase everything',eraseAll,true)">Erase all data</button>
-  <p class="tiny muted" style="text-align:center;margin-top:18px">Abogado Puhon Inventory v2.0</p>`)}
+  <p class="tiny muted" style="text-align:center;margin-top:18px">Abogado Puhon Inventory v2.1</p>`)}
+function setTheme(t){lset('ap-theme',t);if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t);openSettings()}
 function saveSettings(){const c=S.settings;c.store=$('#stName').value.trim()||'Abogado Puhon';
   c.cats.forEach((k,i)=>{c.prices[k]=c.prices[k]||{Standard:{},Mini:{}};['Standard','Mini'].forEach(s=>['price','cost'].forEach(f=>{c.prices[k][s]=c.prices[k][s]||{};c.prices[k][s][f]=+$(`#pl_${i}_${s}_${f}`).value||0}))});
   c.glitter={price:+$('#gl_price').value||0,cost:+$('#gl_cost').value||0};c.discounts={two:+$('#d2').value||0,three:+$('#d3').value||0,four:+$('#d4').value||0};c.low=parseInt($('#stLow').value)||0;
