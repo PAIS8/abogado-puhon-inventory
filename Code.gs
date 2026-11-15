@@ -10,11 +10,14 @@
  * Do not edit column C by hand. Use the app to change data.
  */
 const STORE_CODE = 'CHANGE-THIS-CODE';
+// Only needed if you made the script at script.google.com instead of from inside the Sheet.
+// Paste the Sheet's ID here (the long text between /d/ and /edit in the Sheet's address).
+const SHEET_ID = '';
 const TZ = 'Asia/Manila';
 const TABS = { settings: 'Settings', products: 'Products', moves: 'Moves', photos: 'Photos' };
 
 function sheet_(col) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
   const name = TABS[col];
   if (!name) throw new Error('unknown collection');
   let sh = ss.getSheetByName(name);

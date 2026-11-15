@@ -19,6 +19,16 @@ The Sheet fills itself with four tabs: Settings, Products, Moves and Photos. Col
 
 If you change `Code.gs` later, use **Deploy > Manage deployments > Edit > New version**. The link stays the same.
 
+### If Google shows "Sorry, unable to open the file" (or the page opens with /u/1/ in the address)
+
+This happens when more than one Google account is signed in in the same browser, and Google opens the wrong one. Fix it by using a private window:
+
+1. Open a private (incognito) window and go to sheets.google.com.
+2. Sign in with only the one account that owns the Sheet.
+3. Open the Sheet and do Extensions > Apps Script from there.
+
+Another way: go to script.google.com > New project, paste `Code.gs`, and also paste the Sheet's ID into `SHEET_ID` at the top.
+
 ## 2. Put the link in the app
 
 1. In this repository, open `config.js` and click the pencil.
